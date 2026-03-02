@@ -10,6 +10,9 @@ class TemperatureLogic {
 
     final number = double.tryParse(input.trim());
     if (number != null) {
+      if (!number.isFinite) {
+        return Colors.white70;
+      }
       if (number >= 30) {
         return Colors.redAccent;
       } else if (number <= 0) {
