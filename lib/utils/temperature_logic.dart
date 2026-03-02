@@ -16,6 +16,8 @@ class TemperatureLogic {
         return Colors.blueAccent;
       } else if (number >= 20 && number < 30) {
         return Colors.greenAccent;
+      } else if (number > 0 && number < 20) {
+        return Colors.orangeAccent;
       }
     }
 
@@ -41,6 +43,7 @@ class TemperatureLogic {
       return '$number°C';
     }
 
-    return input;
+    // Return default empty state for non-numeric input (unless Easter Egg)
+    return '--°C';
   }
 }
