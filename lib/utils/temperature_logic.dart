@@ -37,13 +37,15 @@ class TemperatureLogic {
 
     final number = double.tryParse(input.trim());
     if (number != null) {
+      if (!number.isFinite) {
+        return '--°C';
+      }
       if (number == number.truncateToDouble()) {
         return '${number.truncate()}°C';
       }
       return '$number°C';
     }
 
-    // Return default empty state for non-numeric input (unless Easter Egg)
     return '--°C';
   }
 }
