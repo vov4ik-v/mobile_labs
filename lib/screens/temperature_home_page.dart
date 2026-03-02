@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../utils/temperature_logic.dart';
-import '../widgets/temperature_display.dart';
-import '../widgets/temperature_input.dart';
+import 'package:mobile_labs/utils/temperature_logic.dart';
+import 'package:mobile_labs/widgets/temperature_display.dart';
+import 'package:mobile_labs/widgets/temperature_input.dart';
 
 class TemperatureHomePage extends StatefulWidget {
   const TemperatureHomePage({super.key});
