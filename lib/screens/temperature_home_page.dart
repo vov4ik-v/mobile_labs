@@ -27,62 +27,58 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 500),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: currentColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Icon(
-                          Icons.thermostat,
-                          color: currentColor,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Text(
-                        'Temperature',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          height: 1.2,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: currentColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      Icons.thermostat,
+                      color: currentColor,
+                      size: 28,
+                    ),
                   ),
-
-                  const Spacer(),
-
-                  TemperatureDisplay(
-                    displayText: displayText,
-                    currentColor: currentColor,
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Temperature',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-
-                  const Spacer(),
-
-                  TemperatureInput(
-                    controller: _controller,
-                    onChanged: (value) => setState(() => _inputText = value),
-                  ),
-
-                  const SizedBox(height: 16),
                 ],
               ),
-            ),
+
+              const Spacer(),
+
+              TemperatureDisplay(
+                displayText: displayText,
+                currentColor: currentColor,
+              ),
+
+              const Spacer(),
+
+              TemperatureInput(
+                controller: _controller,
+                onChanged: (value) => setState(() => _inputText = value),
+              ),
+
+              const SizedBox(height: 16),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
