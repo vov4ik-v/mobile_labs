@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:mobile_labs/utils/temperature_logic.dart';
 import 'package:mobile_labs/widgets/temperature_display.dart';
 import 'package:mobile_labs/widgets/temperature_input.dart';
@@ -27,14 +26,12 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
     final displayText = TemperatureLogic.getDisplayText(_inputText);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 32,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
