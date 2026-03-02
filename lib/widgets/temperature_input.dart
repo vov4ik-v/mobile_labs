@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class TemperatureInput extends StatelessWidget {
-  final TextEditingController controller;
+  final String initialValue;
   final ValueChanged<String> onChanged;
 
   const TemperatureInput({
-    required this.controller, required this.onChanged, super.key,
+    required this.initialValue, required this.onChanged, super.key,
   });
 
   @override
@@ -16,8 +16,8 @@ class TemperatureInput extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
-      child: TextField(
-        controller: controller,
+      child: TextFormField(
+        initialValue: initialValue,
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           hintText: 'Введіть температуру...',

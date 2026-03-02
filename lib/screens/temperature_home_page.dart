@@ -11,14 +11,7 @@ class TemperatureHomePage extends StatefulWidget {
 }
 
 class _TemperatureHomePageState extends State<TemperatureHomePage> {
-  final TextEditingController _controller = TextEditingController();
   String _inputText = '';
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +64,7 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
               const Spacer(),
 
               TemperatureInput(
-                controller: _controller,
+                initialValue: _inputText,
                 onChanged: (value) => setState(() => _inputText = value),
               ),
 
