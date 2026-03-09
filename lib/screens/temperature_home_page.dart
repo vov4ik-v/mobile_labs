@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_labs/utils/temperature_logic.dart';
 import 'package:mobile_labs/widgets/temperature_display.dart';
 import 'package:mobile_labs/widgets/temperature_input.dart';
+import 'package:mobile_labs/widgets/temperature_navigation.dart';
 
 class TemperatureHomePage extends StatefulWidget {
   const TemperatureHomePage({super.key});
@@ -12,6 +13,8 @@ class TemperatureHomePage extends StatefulWidget {
 
 class _TemperatureHomePageState extends State<TemperatureHomePage> {
   String _inputText = '';
+  int _topPadding = 0;
+  int _bottomPadding = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,10 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,16 +64,27 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
                           ),
                         ],
                       ),
+                      SizedBox(height: _topPadding.toDouble()),
                       TemperatureDisplay(
                         displayText: displayText,
                         currentColor: currentColor,
+                      ),
+                      SizedBox(height: _bottomPadding.toDouble()),
+                      TemperatureNavigation(
+                        onUpTaped: (value) => setState(() {
+                          _bottomPadding += value;
+                        }),
+                        onDownTaped: (value) => setState(() {
+                          _topPadding += value;
+                        }),
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TemperatureInput(
                             initialValue: _inputText,
-                            onChanged: (value) => setState(() => _inputText = value),
+                            onChanged: (value) =>
+                                setState(() => _inputText = value),
                           ),
                           const SizedBox(height: 16),
                         ],
