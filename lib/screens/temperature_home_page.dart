@@ -13,8 +13,7 @@ class TemperatureHomePage extends StatefulWidget {
 
 class _TemperatureHomePageState extends State<TemperatureHomePage> {
   String _inputText = '';
-  int _topPadding = 0;
-  int _bottomPadding = 0;
+  int _displayOffset = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -64,18 +63,17 @@ class _TemperatureHomePageState extends State<TemperatureHomePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: _topPadding.toDouble()),
+                      SizedBox(height: _displayOffset.toDouble()),
                       TemperatureDisplay(
                         displayText: displayText,
                         currentColor: currentColor,
                       ),
-                      SizedBox(height: _bottomPadding.toDouble()),
                       TemperatureNavigation(
                         onUpTaped: (value) => setState(() {
-                          _bottomPadding += value;
+                          _displayOffset -= value;
                         }),
                         onDownTaped: (value) => setState(() {
-                          _topPadding += value;
+                          _displayOffset += value;
                         }),
                       ),
                       Column(
