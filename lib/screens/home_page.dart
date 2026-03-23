@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/models/user.dart';
 import 'package:mobile_labs/repositories/local_auth_repository.dart';
+import 'package:mobile_labs/screens/room_detail_page.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/widgets/room_card.dart';
 import 'package:mobile_labs/widgets/summary_card.dart';
@@ -141,9 +142,17 @@ class _HomePageState extends State<HomePage> {
                     temperature: '23',
                     humidity: '45',
                     isHeatingOn: true,
-                    onTap: () => Navigator.pushNamed(
+                    onTap: () => Navigator.push(
                       context,
-                      '/room-detail',
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const RoomDetailPage(
+                          name: 'Living Room',
+                          temperature: 23,
+                          humidity: 45,
+                          isHeatingOn: true,
+                        ),
+                      ),
                     ),
                   ),
                   RoomCard(
@@ -152,9 +161,17 @@ class _HomePageState extends State<HomePage> {
                     temperature: '21',
                     humidity: '50',
                     isHeatingOn: false,
-                    onTap: () => Navigator.pushNamed(
+                    onTap: () => Navigator.push(
                       context,
-                      '/room-detail',
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const RoomDetailPage(
+                          name: 'Bedroom',
+                          temperature: 21,
+                          humidity: 50,
+                          isHeatingOn: false,
+                        ),
+                      ),
                     ),
                   ),
                   RoomCard(
@@ -163,9 +180,17 @@ class _HomePageState extends State<HomePage> {
                     temperature: '24',
                     humidity: '40',
                     isHeatingOn: true,
-                    onTap: () => Navigator.pushNamed(
+                    onTap: () => Navigator.push(
                       context,
-                      '/room-detail',
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const RoomDetailPage(
+                          name: 'Kitchen',
+                          temperature: 24,
+                          humidity: 40,
+                          isHeatingOn: true,
+                        ),
+                      ),
                     ),
                   ),
                   RoomCard(
@@ -174,9 +199,17 @@ class _HomePageState extends State<HomePage> {
                     temperature: '22',
                     humidity: '47',
                     isHeatingOn: false,
-                    onTap: () => Navigator.pushNamed(
+                    onTap: () => Navigator.push(
                       context,
-                      '/room-detail',
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const RoomDetailPage(
+                          name: 'Office',
+                          temperature: 22,
+                          humidity: 47,
+                          isHeatingOn: false,
+                        ),
+                      ),
                     ),
                   ),
                 ]),

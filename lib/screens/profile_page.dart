@@ -44,9 +44,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final newName = await showDialog<String>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (context, setDialogState) {
+          builder: (dialogContext, setDialogState) {
             return AlertDialog(
               title: const Text('Edit Name'),
               content: TextField(
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
               actions: [
                 TextButton(
                   onPressed: () =>
-                      Navigator.pop(context),
+                      Navigator.pop(dialogContext),
                   child: const Text('Cancel'),
                 ),
                 TextButton(
@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       return;
                     }
                     Navigator.pop(
-                      context,
+                      dialogContext,
                       controller.text.trim(),
                     );
                   },
@@ -93,6 +93,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     controller.dispose();
+
+    if (!mounted) return;
 
     if (newName != null && _user != null) {
       final updatedUser = _user!.copyWith(name: newName);

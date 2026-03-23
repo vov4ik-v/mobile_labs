@@ -6,13 +6,24 @@ import 'package:mobile_labs/widgets/mode_selector.dart';
 import 'package:mobile_labs/widgets/temperature_control_circle.dart';
 
 class RoomDetailPage extends StatelessWidget {
-  const RoomDetailPage({super.key});
+  final String name;
+  final int temperature;
+  final int humidity;
+  final bool isHeatingOn;
+
+  const RoomDetailPage({
+    required this.name,
+    required this.temperature,
+    required this.humidity,
+    required this.isHeatingOn,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Living Room'),
+        title: Text(name),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
@@ -23,7 +34,9 @@ class RoomDetailPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(
+              Icons.settings_outlined,
+            ),
             onPressed: () {},
           ),
         ],
@@ -33,24 +46,30 @@ class RoomDetailPage extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const TemperatureControlCircle(current: 23, target: 24),
+              TemperatureControlCircle(
+                current: temperature,
+                target: temperature + 1,
+              ),
               const SizedBox(height: 32),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
                   ClimateInfoCard(
                     icon: Icons.water_drop_outlined,
                     label: 'Humidity',
-                    value: '45%',
+                    value: '$humidity%',
                   ),
                   ClimateInfoCard(
-                    icon: Icons.local_fire_department_outlined,
+                    icon: Icons
+                        .local_fire_department_outlined,
                     label: 'Heating',
-                    value: 'On',
-                    isHighlight: true,
+                    value: isHeatingOn ? 'On' : 'Off',
+                    isHighlight: isHeatingOn,
                   ),
-                  ClimateInfoCard(
-                    icon: Icons.thermostat_auto_outlined,
+                  const ClimateInfoCard(
+                    icon:
+                        Icons.thermostat_auto_outlined,
                     label: 'Mode',
                     value: 'Comfort',
                   ),
@@ -63,36 +82,44 @@ class RoomDetailPage extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius:
+                      BorderRadius.circular(24),
                   boxShadow: AppShadows.card,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Heating System',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color:
+                                AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Currently active',
-                          style: TextStyle(
+                          isHeatingOn
+                              ? 'Currently active'
+                              : 'Currently inactive',
+                          style: const TextStyle(
                             fontSize: 14,
-                            color: AppColors.textSecondary,
+                            color:
+                                AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
                     CupertinoSwitch(
-                      value: true,
-                      activeTrackColor: AppColors.primary,
+                      value: isHeatingOn,
+                      activeTrackColor:
+                          AppColors.primary,
                       onChanged: (val) {},
                     ),
                   ],

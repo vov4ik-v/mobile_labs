@@ -3,7 +3,6 @@ import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/screens/login_page.dart';
 import 'package:mobile_labs/screens/profile_page.dart';
 import 'package:mobile_labs/screens/register_page.dart';
-import 'package:mobile_labs/screens/room_detail_page.dart';
 import 'package:mobile_labs/theme.dart';
 
 void main() {
@@ -37,8 +36,6 @@ class SmartClimateApp extends StatelessWidget {
         '/login': (_) => const LoginPage(),
         '/register': (_) => const RegisterPage(),
         '/home': (_) => const HomePage(),
-        '/room-detail': (_) =>
-            const RoomDetailPage(),
         '/profile': (_) => const ProfilePage(),
       },
     );
