@@ -92,8 +92,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-    controller.dispose();
-
     if (!mounted) return;
 
     if (newName != null && _user != null) {
