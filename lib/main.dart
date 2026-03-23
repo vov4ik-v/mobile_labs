@@ -7,6 +7,7 @@ import 'package:mobile_labs/screens/room_detail_page.dart';
 import 'package:mobile_labs/theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const SmartClimateApp());
 }
 
