@@ -20,10 +20,7 @@ class TemperatureControlCircle extends StatelessWidget {
         shape: BoxShape.circle,
         color: AppColors.surface,
         boxShadow: AppShadows.card,
-        border: Border.all(
-          color: AppColors.background,
-          width: 12,
-        ),
+        border: Border.all(color: AppColors.background, width: 12),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_labs/theme.dart';
 
 class AppLogo extends StatelessWidget {
-  const AppLogo();
+  const AppLogo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,7 @@ class AppLogo extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             color: AppColors.primaryLight,
-            borderRadius:
-            BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: const Icon(
             Icons.thermostat,
@@ -34,10 +33,7 @@ class AppLogo extends StatelessWidget {
         const SizedBox(height: 6),
         const Text(
           'Control your home comfort easily',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
         ),
       ],
     );

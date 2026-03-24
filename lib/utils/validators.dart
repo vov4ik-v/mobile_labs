@@ -35,10 +35,7 @@ abstract final class Validators {
     return null;
   }
 
-  static String? validateConfirmPassword(
-    String? value,
-    String password,
-  ) {
+  static String? validateConfirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
       return 'Please confirm your password';
     }

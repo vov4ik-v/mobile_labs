@@ -66,11 +66,7 @@ class SummaryCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Icon(
-                Icons.waves,
-                color: Colors.white,
-                size: 48,
-              ),
+              const Icon(Icons.waves, color: Colors.white, size: 48),
             ],
           ),
           const SizedBox(height: 24),
@@ -124,10 +120,7 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.primaryLight,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: AppColors.primaryLight, fontSize: 12),
         ),
         const SizedBox(height: 4),
         Text(

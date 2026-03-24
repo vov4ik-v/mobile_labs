@@ -1,12 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/models/user.dart';
-import 'package:mobile_labs/repositories/local_auth_repository.dart';
+import 'package:mobile_labs/providers/auth_provider.dart';
+import 'package:mobile_labs/services/connectivity_service.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -37,15 +40,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   bool _validate() {
-    final nameError = Validators.validateName(
-      _nameController.text,
-    );
-    final emailError = Validators.validateEmail(
-      _emailController.text,
-    );
-    final passwordError = Validators.validatePassword(
-      _passwordController.text,
-    );
+    final nameError = Validators.validateName(_nameController.text);
+    final emailError = Validators.validateEmail(_emailController.text);
+    final passwordError = Validators.validatePassword(_passwordController.text);
     final confirmError = Validators.validateConfirmPassword(
       _confirmPasswordController.text,
       _passwordController.text,
@@ -69,8 +66,27 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() => _isLoading = true);
 
-    final prefs = await SharedPreferences.getInstance();
-    final repository = LocalAuthRepository(prefs);
+    final connectivity = Provider.of<ConnectivityService>(
+      context,
+      listen: false,
+    );
+    final hasInternet = await connectivity.hasConnection();
+
+    if (!hasInternet && context.mounted) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No internet connection. Please check your network and try again.',
+          ),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     final user = User(
       name: _nameController.text.trim(),
@@ -78,9 +94,9 @@ class _RegisterPageState extends State<RegisterPage> {
       password: _passwordController.text,
     );
 
-    await repository.register(user);
+    await authProvider.register(user);
 
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     setState(() => _isLoading = false);
 
@@ -104,9 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,

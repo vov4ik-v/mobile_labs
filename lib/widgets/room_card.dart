@@ -43,11 +43,7 @@ class RoomCard extends StatelessWidget {
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    icon,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 24),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(

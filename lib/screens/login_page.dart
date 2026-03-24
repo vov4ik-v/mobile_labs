@@ -1,11 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:mobile_labs/repositories/local_auth_repository.dart';
+import 'package:mobile_labs/providers/auth_provider.dart';
+import 'package:mobile_labs/services/connectivity_service.dart';
 import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/app_logo.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,12 +33,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _validate() {
-    final emailError = Validators.validateEmail(
-      _emailController.text,
-    );
-    final passwordError = Validators.validatePassword(
-      _passwordController.text,
-    );
+    final emailError = Validators.validateEmail(_emailController.text);
+    final passwordError = Validators.validatePassword(_passwordController.text);
 
     setState(() {
       _emailError = emailError;
@@ -50,27 +49,42 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _isLoading = true);
 
-    final prefs = await SharedPreferences.getInstance();
-    final repository = LocalAuthRepository(prefs);
+    final connectivity = Provider.of<ConnectivityService>(
+      context,
+      listen: false,
+    );
+    final hasInternet = await connectivity.hasConnection();
 
-    final user = await repository.login(
+    if (!hasInternet && context.mounted) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No internet connection. Please check your network and try again.',
+          ),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.login(
       _emailController.text.trim(),
       _passwordController.text,
     );
 
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     setState(() => _isLoading = false);
 
-    if (user != null) {
+    if (success) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Invalid email or password. '
-            'Please try again.',
-          ),
+          content: Text('Invalid email or password. Please try again.'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -83,9 +97,7 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -107,20 +119,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 PrimaryButton(
-                  text: _isLoading
-                      ? 'Logging In...'
-                      : 'Log In',
-                  onPressed:
-                      _isLoading ? () {} : _login,
+                  text: _isLoading ? 'Logging In...' : 'Log In',
+                  onPressed: _isLoading ? () {} : _login,
                 ),
                 const SizedBox(height: 16),
                 AuthFooterText(
                   question: "Don't have an account?",
                   actionText: 'Sign Up',
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    '/register',
-                  ),
+                  onTap: () => Navigator.pushNamed(context, '/register'),
                 ),
               ],
             ),

@@ -1,19 +1,21 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile_labs/models/user.dart';
 import 'package:mobile_labs/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalAuthRepository implements AuthRepository {
+class SecureAuthRepository implements AuthRepository {
   static const _userDataKey = 'user_data';
-  static const _currentEmailKey = 'current_user_email';
+  static const _tokenKey = 'auth_token';
 
   final SharedPreferences _prefs;
+  final FlutterSecureStorage _secureStorage;
 
-  const LocalAuthRepository(this._prefs);
+  const SecureAuthRepository(this._prefs, this._secureStorage);
 
   @override
   Future<void> register(User user) async {
     await _prefs.setString(_userDataKey, user.toJsonString());
-    await _prefs.setString(_currentEmailKey, user.email);
+    await _secureStorage.write(key: _tokenKey, value: user.email);
   }
 
   @override
@@ -22,7 +24,7 @@ class LocalAuthRepository implements AuthRepository {
     if (savedUser == null) return null;
 
     if (savedUser.email == email && savedUser.password == password) {
-      await _prefs.setString(_currentEmailKey, email);
+      await _secureStorage.write(key: _tokenKey, value: email);
       return savedUser;
     }
 
@@ -31,11 +33,11 @@ class LocalAuthRepository implements AuthRepository {
 
   @override
   Future<User?> getCurrentUser() async {
-    final currentEmail = _prefs.getString(_currentEmailKey);
-    if (currentEmail == null) return null;
+    final token = await _secureStorage.read(key: _tokenKey);
+    if (token == null) return null;
 
     final savedUser = _getSavedUser();
-    if (savedUser?.email == currentEmail) {
+    if (savedUser?.email == token) {
       return savedUser;
     }
 
@@ -50,12 +52,12 @@ class LocalAuthRepository implements AuthRepository {
   @override
   Future<void> deleteUser() async {
     await _prefs.remove(_userDataKey);
-    await _prefs.remove(_currentEmailKey);
+    await _secureStorage.delete(key: _tokenKey);
   }
 
   @override
   Future<void> logout() async {
-    await _prefs.remove(_currentEmailKey);
+    await _secureStorage.delete(key: _tokenKey);
   }
 
   User? _getSavedUser() {
