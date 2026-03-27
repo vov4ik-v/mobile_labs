@@ -6,12 +6,14 @@ class ProfileInfoTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   const ProfileInfoTile({
     required this.icon,
     required this.title,
     required this.onTap,
     this.subtitle,
+    this.trailing,
     super.key,
   });
 
@@ -19,11 +21,15 @@ class ProfileInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 8,
+      ),
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppColors.primaryLight.withValues(alpha: 0.3),
+          color: AppColors.primaryLight
+              .withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
@@ -49,11 +55,12 @@ class ProfileInfoTile extends StatelessWidget {
               ),
             )
           : null,
-      trailing: const Icon(
-        Icons.chevron_right,
-        color: AppColors.textSecondary,
-        size: 24,
-      ),
+      trailing: trailing ??
+          const Icon(
+            Icons.chevron_right,
+            color: AppColors.textSecondary,
+            size: 24,
+          ),
     );
   }
 }
