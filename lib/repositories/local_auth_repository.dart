@@ -102,8 +102,4 @@ class LocalAuthRepository implements AuthRepository {
     await _prefs.remove(_currentEmailKey);
   }
 
-  User? _getSavedUser() {
-    final jsonString = _prefs.getString(_usersDataKey);
-    return User.fromJsonString(jsonString);
-  }
 }

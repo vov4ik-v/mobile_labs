@@ -59,7 +59,9 @@ class SmartClimateApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          initialRoute: authProvider.isAuthenticated ? '/home' : '/login',
+          home: authProvider.isAuthenticated
+              ? const HomePage()
+              : const LoginPage(),
           routes: {
             '/login': (_) => const LoginPage(),
             '/register': (_) => const RegisterPage(),
