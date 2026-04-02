@@ -31,6 +31,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
   int _currentTemp = 0;
   StreamSubscription<String>? _tempSubscription;
   bool _isConnecting = true;
+  bool _isConnected = false;
 
   @override
   void initState() {
@@ -43,11 +44,14 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
 
   Future<void> _initMqtt() async {
     final mqtt = Provider.of<MqttService>(context, listen: false);
-    await mqtt.connectAndListen();
+    final connected = await mqtt.connectAndListen();
 
-    if (mounted) {
-      setState(() => _isConnecting = false);
-    }
+    if (!mounted) return;
+
+    setState(() {
+      _isConnecting = false;
+      _isConnected = connected;
+    });
 
     _tempSubscription = mqtt.temperatureStream.listen((tempString) {
       final doubleTemp = double.tryParse(tempString);
@@ -91,9 +95,13 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
               ),
             )
           else
-            const Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.wifi, color: Colors.green, size: 24),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Icon(
+                _isConnected ? Icons.wifi : Icons.wifi_off,
+                color: _isConnected ? Colors.green : Colors.red,
+                size: 24,
+              ),
             ),
         ],
       ),

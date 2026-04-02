@@ -10,7 +10,8 @@ class MqttService {
 
   Stream<String> get temperatureStream => _temperatureController.stream;
 
-  Future<void> connectAndListen() async {
+  /// Returns true if the connection was successful.
+  Future<bool> connectAndListen() async {
     _client = MqttServerClient(
       'broker.hivemq.com',
       'flutter_client_id_${DateTime.now().millisecondsSinceEpoch}',
@@ -32,7 +33,7 @@ class MqttService {
     } catch (e) {
       debugPrint('MQTT Connection failed: $e');
       _client!.disconnect();
-      return;
+      return false;
     }
 
     if (_client!.connectionStatus!.state == MqttConnectionState.connected) {
@@ -51,7 +52,9 @@ class MqttService {
         debugPrint('Received temperature from MQTT: $payload');
         _temperatureController.add(payload);
       });
+      return true;
     }
+    return false;
   }
 
   void disconnect() {

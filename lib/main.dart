@@ -10,21 +10,19 @@ import 'package:mobile_labs/services/connectivity_service.dart';
 import 'package:mobile_labs/services/mqtt_service.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final prefs = await SharedPreferences.getInstance();
   const secureStorage = FlutterSecureStorage();
-  final authRepository = SecureAuthRepository(prefs, secureStorage);
+  final authRepository = SecureAuthRepository(secureStorage);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider(authRepository)),
         Provider(create: (_) => ConnectivityService()),
-        Provider(create: (_) => MqttService()),
+        Provider(create: (_) => MqttService(), dispose: (_, mqtt) => mqtt.dispose()),
       ],
       child: const SmartClimateApp(),
     ),

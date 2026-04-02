@@ -26,10 +26,12 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _currentUser = await _authRepository.login(email, password);
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _currentUser = await _authRepository.login(email, password);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
 
     return _currentUser != null;
   }
@@ -38,11 +40,13 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await _authRepository.register(user);
-    _currentUser = user;
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      await _authRepository.register(user);
+      _currentUser = user;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> updateProfile(User user) async {
