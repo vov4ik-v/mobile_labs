@@ -2,12 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/providers/auth_provider.dart';
-import 'package:mobile_labs/services/connectivity_service.dart';
+import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/app_logo.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
-import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
 import 'package:provider/provider.dart';
 
@@ -50,27 +49,11 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _isLoading = true);
 
-    final connectivity = Provider.of<ConnectivityService>(
+    if (!context.mounted) return;
+    final authProvider = Provider.of<AuthProvider>(
       context,
       listen: false,
     );
-    final hasInternet = await connectivity.hasConnection();
-
-    if (!hasInternet && context.mounted) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No internet connection. Please check your network and try again.',
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-      return;
-    }
-
-    if (!context.mounted) return;
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(
       _emailController.text.trim(),
       _passwordController.text,
@@ -82,13 +65,17 @@ class _LoginPageState extends State<LoginPage> {
 
     if (success) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => const HomePage()),
+        MaterialPageRoute<void>(
+          builder: (_) => const HomePage(),
+        ),
         (route) => false,
       );
     } else {
+      final error = authProvider.error ??
+          'Invalid email or password.';
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid email or password. Please try again.'),
+        SnackBar(
+          content: Text(error),
           backgroundColor: Colors.redAccent,
         ),
       );
