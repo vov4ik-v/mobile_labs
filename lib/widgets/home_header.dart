@@ -21,12 +21,10 @@ class HomeHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
@@ -42,12 +40,8 @@ class HomeHeader extends StatelessWidget {
                 onTap: onProfileTap,
                 child: const CircleAvatar(
                   radius: 24,
-                  backgroundColor:
-                      AppColors.primaryLight,
-                  child: Icon(
-                    Icons.person,
-                    color: AppColors.primary,
-                  ),
+                  backgroundColor: AppColors.primaryLight,
+                  child: Icon(Icons.person, color: AppColors.primary),
                 ),
               ),
             ],

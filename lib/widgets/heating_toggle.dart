@@ -5,11 +5,7 @@ class HeatingToggle extends StatelessWidget {
   final bool isHeatingOn;
   final ValueChanged<bool>? onChanged;
 
-  const HeatingToggle({
-    required this.isHeatingOn,
-    this.onChanged,
-    super.key,
-  });
+  const HeatingToggle({required this.isHeatingOn, this.onChanged, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +17,10 @@ class HeatingToggle extends StatelessWidget {
         boxShadow: AppShadows.card,
       ),
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Heating System',
@@ -38,9 +32,7 @@ class HeatingToggle extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                isHeatingOn
-                    ? 'Currently active'
-                    : 'Currently inactive',
+                isHeatingOn ? 'Currently active' : 'Currently inactive',
                 style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,

@@ -48,10 +48,7 @@ class RegisterForm extends StatelessWidget {
         const SizedBox(height: 8),
         const Text(
           'Join Smart Climate today',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 40),
         CustomTextField(
@@ -85,9 +82,7 @@ class RegisterForm extends StatelessWidget {
         ),
         const SizedBox(height: 32),
         PrimaryButton(
-          text: isLoading
-              ? 'Signing Up...'
-              : 'Sign Up',
+          text: isLoading ? 'Signing Up...' : 'Sign Up',
           onPressed: isLoading ? () {} : onRegister,
         ),
         const SizedBox(height: 24),

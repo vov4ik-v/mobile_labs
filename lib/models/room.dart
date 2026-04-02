@@ -42,9 +42,7 @@ class Room {
   static List<Room> fromJsonList(String jsonString) {
     final list = jsonDecode(jsonString) as List<dynamic>;
     return list
-        .map(
-          (item) => Room.fromJson(item as Map<String, dynamic>),
-        )
+        .map((item) => Room.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 

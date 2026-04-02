@@ -14,11 +14,7 @@ class CachedRoomRepository implements RoomRepository {
   final ConnectivityService _connectivity;
   final SharedPreferences _prefs;
 
-  const CachedRoomRepository(
-    this._apiService,
-    this._connectivity,
-    this._prefs,
-  );
+  const CachedRoomRepository(this._apiService, this._connectivity, this._prefs);
 
   @override
   Future<List<Room>> getRooms(String token) async {
@@ -28,10 +24,7 @@ class CachedRoomRepository implements RoomRepository {
       try {
         final data = await _apiService.getRooms(token);
         final rooms = data
-            .map(
-              (json) =>
-                  Room.fromJson(json as Map<String, dynamic>),
-            )
+            .map((json) => Room.fromJson(json as Map<String, dynamic>))
             .toList();
         await _cacheRooms(rooms);
         return rooms;
@@ -44,10 +37,7 @@ class CachedRoomRepository implements RoomRepository {
   }
 
   Future<void> _cacheRooms(List<Room> rooms) async {
-    await _prefs.setString(
-      _cacheKey,
-      Room.toJsonList(rooms),
-    );
+    await _prefs.setString(_cacheKey, Room.toJsonList(rooms));
   }
 
   List<Room> _getCachedRooms() {

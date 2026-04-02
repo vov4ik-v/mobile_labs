@@ -5,9 +5,7 @@ Future<String?> showEditNameDialog(
   BuildContext context,
   String currentName,
 ) async {
-  final controller = TextEditingController(
-    text: currentName,
-  );
+  final controller = TextEditingController(text: currentName);
   String? errorText;
 
   return showDialog<String>(
@@ -23,33 +21,23 @@ Future<String?> showEditNameDialog(
                 labelText: 'Name',
                 errorText: errorText,
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
             ),
             actions: [
               TextButton(
-                onPressed: () =>
-                    Navigator.pop(dialogContext),
+                onPressed: () => Navigator.pop(dialogContext),
                 child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
-                  final validation =
-                      Validators.validateName(
-                    controller.text,
-                  );
+                  final validation = Validators.validateName(controller.text);
                   if (validation != null) {
-                    setDialogState(
-                      () => errorText = validation,
-                    );
+                    setDialogState(() => errorText = validation);
                     return;
                   }
-                  Navigator.pop(
-                    dialogContext,
-                    controller.text.trim(),
-                  );
+                  Navigator.pop(dialogContext, controller.text.trim());
                 },
                 child: const Text('Save'),
               ),
@@ -75,16 +63,12 @@ Future<bool> showConfirmDialog(
         content: Text(content),
         actions: [
           TextButton(
-            onPressed: () =>
-                Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () =>
-                Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.redAccent,
-            ),
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
             child: Text(confirmText),
           ),
         ],

@@ -18,9 +18,7 @@ class ConnectionIndicator extends StatelessWidget {
         child: SizedBox(
           width: 20,
           height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
       );
     }
@@ -28,8 +26,7 @@ class ConnectionIndicator extends StatelessWidget {
       padding: const EdgeInsets.only(right: 16),
       child: Icon(
         isConnected ? Icons.wifi : Icons.wifi_off,
-        color:
-            isConnected ? Colors.green : Colors.red,
+        color: isConnected ? Colors.green : Colors.red,
         size: 24,
       ),
     );

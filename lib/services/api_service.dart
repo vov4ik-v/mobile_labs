@@ -25,10 +25,7 @@ class ApiService {
     };
   }
 
-  Future<Map<String, dynamic>> login(
-    String email,
-    String password,
-  ) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await _client.post(
       Uri.parse('${ApiConfig.baseUrl}${ApiConfig.loginPath}'),
       headers: _headers(),
@@ -43,15 +40,9 @@ class ApiService {
     String password,
   ) async {
     final response = await _client.post(
-      Uri.parse(
-        '${ApiConfig.baseUrl}${ApiConfig.registerPath}',
-      ),
+      Uri.parse('${ApiConfig.baseUrl}${ApiConfig.registerPath}'),
       headers: _headers(),
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'name': name, 'email': email, 'password': password}),
     );
     return _handleResponse(response);
   }
@@ -74,15 +65,13 @@ class ApiService {
   }
 
   Map<String, dynamic> _handleResponse(http.Response response) {
-    final body =
-        jsonDecode(response.body) as Map<String, dynamic>;
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return body;
     }
 
-    final message =
-        body['message'] as String? ?? 'Request failed';
+    final message = body['message'] as String? ?? 'Request failed';
     throw ApiException(message, statusCode: response.statusCode);
   }
 

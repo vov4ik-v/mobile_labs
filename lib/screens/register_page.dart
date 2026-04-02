@@ -1,20 +1,18 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_labs/cubits/auth_cubit.dart';
+import 'package:mobile_labs/cubits/auth_state.dart';
 import 'package:mobile_labs/models/user.dart';
-import 'package:mobile_labs/providers/auth_provider.dart';
 import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/register_form.dart';
-import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() =>
-      _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
@@ -27,7 +25,6 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _emailError;
   String? _passwordError;
   String? _confirmError;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -39,74 +36,52 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   bool _validate() {
-    final ne = Validators.validateName(
-      _nameCtrl.text,
-    );
-    final ee = Validators.validateEmail(
-      _emailCtrl.text,
-    );
-    final pe = Validators.validatePassword(
-      _passwordCtrl.text,
-    );
+    final ne = Validators.validateName(_nameCtrl.text);
+    final ee = Validators.validateEmail(_emailCtrl.text);
+    final pe = Validators.validatePassword(_passwordCtrl.text);
     final ce = Validators.validateConfirmPassword(
       _confirmCtrl.text,
       _passwordCtrl.text,
     );
-
     setState(() {
       _nameError = ne;
       _emailError = ee;
       _passwordError = pe;
       _confirmError = ce;
     });
-
-    return ne == null &&
-        ee == null &&
-        pe == null &&
-        ce == null;
+    return ne == null && ee == null && pe == null && ce == null;
   }
 
   Future<void> _register() async {
     if (!_validate()) return;
-
-    setState(() => _isLoading = true);
-
-    final auth = Provider.of<AuthProvider>(
-      context,
-      listen: false,
-    );
-
+    final cubit = context.read<AuthCubit>();
     final user = User(
       name: _nameCtrl.text.trim(),
       email: _emailCtrl.text.trim(),
       password: _passwordCtrl.text,
     );
-
-    final success = await auth.register(user);
+    final success = await cubit.register(user);
     if (!mounted) return;
-    setState(() => _isLoading = false);
-
     if (success) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(
-          builder: (_) => const HomePage(),
-        ),
+        MaterialPageRoute<void>(builder: (_) => const HomePage()),
         (route) => false,
       );
     } else {
+      final msg = switch (cubit.state) {
+        AuthError(message: final m) => m,
+        _ => 'Registration failed.',
+      };
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            auth.error ?? 'Registration failed.',
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
+        SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthCubit>().state is AuthLoading;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -122,9 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: RegisterForm(
               nameController: _nameCtrl,
               emailController: _emailCtrl,
@@ -134,10 +107,9 @@ class _RegisterPageState extends State<RegisterPage> {
               emailError: _emailError,
               passwordError: _passwordError,
               confirmError: _confirmError,
-              isLoading: _isLoading,
+              isLoading: isLoading,
               onRegister: _register,
-              onLoginTap: () =>
-                  Navigator.pop(context),
+              onLoginTap: () => Navigator.pop(context),
             ),
           ),
         ),

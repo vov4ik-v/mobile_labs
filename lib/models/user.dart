@@ -28,11 +28,7 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'email': email,
-      'password': password,
-    };
+    return {'name': name, 'email': email, 'password': password};
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -50,8 +46,6 @@ class User {
     if (jsonString == null || jsonString.isEmpty) {
       return null;
     }
-    return User.fromJson(
-      jsonDecode(jsonString) as Map<String, dynamic>,
-    );
+    return User.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
   }
 }

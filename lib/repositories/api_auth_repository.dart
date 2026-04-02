@@ -36,20 +36,13 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<User?> login(
-    String email,
-    String password,
-  ) async {
+  Future<User?> login(String email, String password) async {
     final isOnline = await _connectivity.hasConnection();
 
     if (isOnline) {
-      final response = await _apiService.login(
-        email,
-        password,
-      );
+      final response = await _apiService.login(email, password);
       final token = response['token'] as String;
-      final userData =
-          response['user'] as Map<String, dynamic>;
+      final userData = response['user'] as Map<String, dynamic>;
       final user = User(
         name: userData['name'] as String,
         email: userData['email'] as String,
@@ -65,22 +58,17 @@ class ApiAuthRepository implements AuthRepository {
 
   @override
   Future<User?> getCurrentUser() async {
-    final token =
-        await _secureStorage.read(key: _tokenKey);
+    final token = await _secureStorage.read(key: _tokenKey);
     if (token == null) return null;
 
-    final jsonString =
-        await _secureStorage.read(key: _userDataKey);
+    final jsonString = await _secureStorage.read(key: _userDataKey);
     final user = User.fromJsonString(jsonString);
     return user?.copyWith(token: token);
   }
 
   @override
   Future<void> updateUser(User user) async {
-    await _secureStorage.write(
-      key: _userDataKey,
-      value: user.toJsonString(),
-    );
+    await _secureStorage.write(key: _userDataKey, value: user.toJsonString());
   }
 
   @override
@@ -94,31 +82,16 @@ class ApiAuthRepository implements AuthRepository {
     await _secureStorage.delete(key: _tokenKey);
   }
 
-  Future<void> _saveLocally(
-    User user,
-    String token,
-  ) async {
-    await _secureStorage.write(
-      key: _userDataKey,
-      value: user.toJsonString(),
-    );
-    await _secureStorage.write(
-      key: _tokenKey,
-      value: token,
-    );
+  Future<void> _saveLocally(User user, String token) async {
+    await _secureStorage.write(key: _userDataKey, value: user.toJsonString());
+    await _secureStorage.write(key: _tokenKey, value: token);
   }
 
-  Future<User?> _loginOffline(
-    String email,
-    String password,
-  ) async {
-    final jsonString =
-        await _secureStorage.read(key: _userDataKey);
+  Future<User?> _loginOffline(String email, String password) async {
+    final jsonString = await _secureStorage.read(key: _userDataKey);
     final savedUser = User.fromJsonString(jsonString);
-    if (savedUser?.email == email &&
-        savedUser?.password == password) {
-      final token =
-          await _secureStorage.read(key: _tokenKey);
+    if (savedUser?.email == email && savedUser?.password == password) {
+      final token = await _secureStorage.read(key: _tokenKey);
       return savedUser?.copyWith(token: token);
     }
     return null;
