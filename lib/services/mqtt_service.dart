@@ -10,8 +10,12 @@ class MqttService {
 
   Stream<String> get temperatureStream => _temperatureController.stream;
 
-  /// Returns true if the connection was successful.
+  bool get isConnected =>
+      _client?.connectionStatus?.state == MqttConnectionState.connected;
+
   Future<bool> connectAndListen() async {
+    if (isConnected) return true;
+
     _client = MqttServerClient(
       'broker.hivemq.com',
       'flutter_client_id_${DateTime.now().millisecondsSinceEpoch}',
@@ -19,8 +23,10 @@ class MqttService {
     _client!.port = 1883;
     _client!.logging(on: false);
     _client!.keepAlivePeriod = 20;
+    _client!.autoReconnect = true;
     _client!.onDisconnected = () => debugPrint('MQTT Disconnected');
     _client!.onConnected = () => debugPrint('MQTT Connected to broker');
+    _client!.onAutoReconnected = () => debugPrint('MQTT Auto-reconnected');
 
     final connMessage = MqttConnectMessage()
         .withClientIdentifier(_client!.clientIdentifier)
@@ -55,6 +61,18 @@ class MqttService {
       return true;
     }
     return false;
+  }
+
+  void publish(String topic, String message) {
+    if (_client?.connectionStatus?.state != MqttConnectionState.connected) {
+      debugPrint('MQTT not connected, cannot publish');
+      return;
+    }
+
+    final builder = MqttClientPayloadBuilder();
+    builder.addString(message);
+    _client!.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
+    debugPrint('MQTT Published "$message" to $topic');
   }
 
   void disconnect() {

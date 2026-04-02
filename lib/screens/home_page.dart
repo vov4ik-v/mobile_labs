@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_labs/providers/auth_provider.dart';
 import 'package:mobile_labs/screens/room_detail_page.dart';
 import 'package:mobile_labs/services/connectivity_service.dart';
+import 'package:mobile_labs/services/mqtt_service.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/widgets/room_card.dart';
 import 'package:mobile_labs/widgets/summary_card.dart';
@@ -19,13 +20,68 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  StreamSubscription<String>? _tempSubscription;
   bool _wasOffline = false;
+  String _avgTemperature = '22.5';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initConnectivityTracking();
+      _initMqtt();
+    });
+  }
+
+  Future<void> _resetTemperature() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Admin Reset'),
+        content: const Text(
+          'Send a reset command to the broker?\n'
+          'This will set the temperature to 0.0°C for all connected devices.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final mqtt = Provider.of<MqttService>(context, listen: false);
+    mqtt.publish('sensor/command/labs', 'ADMIN_RESET');
+    setState(() => _avgTemperature = '0.0');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Admin reset command sent to broker'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  Future<void> _initMqtt() async {
+    final mqtt = Provider.of<MqttService>(context, listen: false);
+    await mqtt.connectAndListen();
+
+    if (!mounted) return;
+
+    _tempSubscription = mqtt.temperatureStream.listen((tempString) {
+      final temp = double.tryParse(tempString);
+      if (temp != null && mounted) {
+        setState(() {
+          _avgTemperature = temp.toStringAsFixed(1);
+        });
+      }
     });
   }
 
@@ -79,6 +135,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _connectivitySubscription?.cancel();
+    _tempSubscription?.cancel();
     super.dispose();
   }
 
@@ -136,11 +193,14 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     const SizedBox(height: 32),
-                    const SummaryCard(
-                      temperature: '22.5',
-                      humidity: '48%',
-                      mode: 'Comfort',
-                      heatingStatus: 'On',
+                    GestureDetector(
+                      onLongPress: _resetTemperature,
+                      child: SummaryCard(
+                        temperature: _avgTemperature,
+                        humidity: '48%',
+                        mode: 'Comfort',
+                        heatingStatus: 'On',
+                      ),
                     ),
                     const SizedBox(height: 32),
                     const Text(

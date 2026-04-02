@@ -8,6 +8,7 @@ import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
+import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
 import 'package:provider/provider.dart';
 
@@ -106,7 +107,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       setState(() => _isLoading = false);
 
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const HomePage()),
+        (route) => false,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);

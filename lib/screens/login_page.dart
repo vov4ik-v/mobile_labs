@@ -7,6 +7,7 @@ import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/app_logo.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
+import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,10 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = false);
 
     if (success) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => const HomePage()),
+        (route) => false,
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

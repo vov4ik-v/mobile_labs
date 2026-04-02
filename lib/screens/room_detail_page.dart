@@ -66,8 +66,6 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
   @override
   void dispose() {
     _tempSubscription?.cancel();
-    final mqtt = Provider.of<MqttService>(context, listen: false);
-    mqtt.disconnect();
     super.dispose();
   }
 
