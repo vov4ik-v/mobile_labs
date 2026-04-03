@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "705568419309",
+    "project_id": "smartapp-1fe9d",
+    "storage_bucket": "smartapp-1fe9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705568419309:android:8742b58c74b6814f744be4",
+        "android_client_info": {
+          "package_name": "com.university"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRgVwcgm9ESgaO3qWs0a3K60npLaPbwl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705568419309:android:355a57bf9fc19f5f744be4",
+        "android_client_info": {
+          "package_name": "com.university.mobile_labs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRgVwcgm9ESgaO3qWs0a3K60npLaPbwl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/models/user.dart';
 import 'package:mobile_labs/repositories/auth_repository.dart';
+import 'package:mobile_labs/repositories/firebase_auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
@@ -93,5 +94,28 @@ class AuthProvider extends ChangeNotifier {
     await _authRepository.logout();
     _currentUser = null;
     notifyListeners();
+  }
+
+  Future<bool> signInWithGoogle() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final repo =
+          _authRepository as FirebaseAuthRepository;
+      _currentUser = await repo.signInWithGoogle();
+      if (_currentUser == null) {
+        _error = 'Google sign-in cancelled';
+      }
+    } on Exception catch (e) {
+      _error = e.toString();
+      _currentUser = null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+
+    return _currentUser != null;
   }
 }

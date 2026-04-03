@@ -1,39 +1,35 @@
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_labs/providers/auth_provider.dart';
 import 'package:mobile_labs/providers/room_provider.dart';
-import 'package:mobile_labs/repositories/api_auth_repository.dart';
+import 'package:mobile_labs/repositories/firebase_auth_repository.dart';
 import 'package:mobile_labs/repositories/room_repository.dart';
 import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/screens/login_page.dart';
 import 'package:mobile_labs/screens/profile_page.dart';
 import 'package:mobile_labs/screens/register_page.dart';
-import 'package:mobile_labs/services/api_service.dart';
 import 'package:mobile_labs/services/connectivity_service.dart';
 import 'package:mobile_labs/services/mqtt_service.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   const secureStorage = FlutterSecureStorage();
-  final prefs = await SharedPreferences.getInstance();
-  final apiService = ApiService();
   final connectivity = ConnectivityService();
 
-  final authRepository = ApiAuthRepository(
-    apiService,
-    connectivity,
+  final authRepository = FirebaseAuthRepository(
+    fb.FirebaseAuth.instance,
+    GoogleSignIn(),
     secureStorage,
   );
 
-  final roomRepository = CachedRoomRepository(
-    apiService,
-    connectivity,
-    prefs,
-  );
+  const roomRepository = HardcodedRoomRepository();
 
   runApp(
     MultiProvider(

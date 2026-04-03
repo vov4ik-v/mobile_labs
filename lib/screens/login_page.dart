@@ -7,6 +7,8 @@ import 'package:mobile_labs/utils/validators.dart';
 import 'package:mobile_labs/widgets/app_logo.dart';
 import 'package:mobile_labs/widgets/auth_footer_text.dart';
 import 'package:mobile_labs/widgets/custom_text_field.dart';
+import 'package:mobile_labs/widgets/google_sign_in_button.dart';
+import 'package:mobile_labs/widgets/or_divider.dart';
 import 'package:mobile_labs/widgets/primary_button.dart';
 import 'package:provider/provider.dart';
 
@@ -112,6 +114,12 @@ class _LoginPageState extends State<LoginPage> {
                 PrimaryButton(
                   text: _isLoading ? 'Logging In...' : 'Log In',
                   onPressed: _isLoading ? () {} : _login,
+                ),
+                const SizedBox(height: 16),
+                const OrDivider(),
+                const SizedBox(height: 16),
+                GoogleSignInButton(
+                  isLoading: _isLoading,
                 ),
                 const SizedBox(height: 16),
                 AuthFooterText(
