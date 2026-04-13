@@ -45,10 +45,7 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<User?> login(
-    String email,
-    String password,
-  ) async {
+  Future<User?> login(String email, String password) async {
     final users = _getSavedUsers();
 
     try {
@@ -101,5 +98,4 @@ class LocalAuthRepository implements AuthRepository {
   Future<void> logout() async {
     await _prefs.remove(_currentEmailKey);
   }
-
 }

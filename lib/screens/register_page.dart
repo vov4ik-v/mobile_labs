@@ -1,16 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_labs/cubits/auth_cubit.dart';
+import 'package:mobile_labs/cubits/auth_state.dart';
 import 'package:mobile_labs/models/user.dart';
-import 'package:mobile_labs/providers/auth_provider.dart';
-import 'package:mobile_labs/services/connectivity_service.dart';
+import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/utils/validators.dart';
-import 'package:mobile_labs/widgets/auth_footer_text.dart';
-import 'package:mobile_labs/widgets/custom_text_field.dart';
-import 'package:mobile_labs/screens/home_page.dart';
-import 'package:mobile_labs/widgets/primary_button.dart';
-import 'package:provider/provider.dart';
+import 'package:mobile_labs/widgets/register_form.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -20,112 +16,72 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
 
   String? _nameError;
   String? _emailError;
   String? _passwordError;
-  String? _confirmPasswordError;
-  bool _isLoading = false;
+  String? _confirmError;
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    _confirmCtrl.dispose();
     super.dispose();
   }
 
   bool _validate() {
-    final nameError = Validators.validateName(
-      _nameController.text,
+    final ne = Validators.validateName(_nameCtrl.text);
+    final ee = Validators.validateEmail(_emailCtrl.text);
+    final pe = Validators.validatePassword(_passwordCtrl.text);
+    final ce = Validators.validateConfirmPassword(
+      _confirmCtrl.text,
+      _passwordCtrl.text,
     );
-    final emailError = Validators.validateEmail(
-      _emailController.text,
-    );
-    final passwordError = Validators.validatePassword(
-      _passwordController.text,
-    );
-    final confirmError = Validators.validateConfirmPassword(
-      _confirmPasswordController.text,
-      _passwordController.text,
-    );
-
     setState(() {
-      _nameError = nameError;
-      _emailError = emailError;
-      _passwordError = passwordError;
-      _confirmPasswordError = confirmError;
+      _nameError = ne;
+      _emailError = ee;
+      _passwordError = pe;
+      _confirmError = ce;
     });
-
-    return nameError == null &&
-        emailError == null &&
-        passwordError == null &&
-        confirmError == null;
+    return ne == null && ee == null && pe == null && ce == null;
   }
 
   Future<void> _register() async {
     if (!_validate()) return;
-
-    setState(() => _isLoading = true);
-
-    final connectivity = Provider.of<ConnectivityService>(
-      context,
-      listen: false,
-    );
-    final hasInternet = await connectivity.hasConnection();
-
-    if (!hasInternet && context.mounted) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No internet connection. Please check your network and try again.',
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-      return;
-    }
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
+    final cubit = context.read<AuthCubit>();
     final user = User(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
+      name: _nameCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text,
     );
-
-    try {
-      await authProvider.register(user);
-
-      if (!mounted) return;
-
-      setState(() => _isLoading = false);
-
+    final success = await cubit.register(user);
+    if (!mounted) return;
+    if (success) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute<void>(builder: (_) => const HomePage()),
         (route) => false,
       );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-
+    } else {
+      final msg = switch (cubit.state) {
+        AuthError(message: final m) => m,
+        _ => 'Registration failed.',
+      };
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceAll('Exception: ', '')),
-          backgroundColor: Colors.redAccent,
-        ),
+        SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthCubit>().state is AuthLoading;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -141,72 +97,19 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Join Smart Climate today',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                CustomTextField(
-                  label: 'Name',
-                  icon: Icons.person_outline,
-                  controller: _nameController,
-                  errorText: _nameError,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Email',
-                  icon: Icons.email_outlined,
-                  controller: _emailController,
-                  errorText: _emailError,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Password',
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                  controller: _passwordController,
-                  errorText: _passwordError,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Confirm Password',
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                  controller: _confirmPasswordController,
-                  errorText: _confirmPasswordError,
-                ),
-                const SizedBox(height: 32),
-                PrimaryButton(
-                  text: _isLoading ? 'Signing Up...' : 'Sign Up',
-                  onPressed: _isLoading ? () {} : _register,
-                ),
-                const SizedBox(height: 24),
-                AuthFooterText(
-                  question: 'Already have an account?',
-                  actionText: 'Log In',
-                  onTap: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 24),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: RegisterForm(
+              nameController: _nameCtrl,
+              emailController: _emailCtrl,
+              passwordController: _passwordCtrl,
+              confirmController: _confirmCtrl,
+              nameError: _nameError,
+              emailError: _emailError,
+              passwordError: _passwordError,
+              confirmError: _confirmError,
+              isLoading: isLoading,
+              onRegister: _register,
+              onLoginTap: () => Navigator.pop(context),
             ),
           ),
         ),
