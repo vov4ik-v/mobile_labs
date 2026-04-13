@@ -4,17 +4,26 @@ import 'package:mobile_labs/theme.dart';
 class ProfileHeader extends StatelessWidget {
   final String name;
   final String email;
+  final VoidCallback? onAvatarTripleTap;
 
-  const ProfileHeader({required this.name, required this.email, super.key});
+  const ProfileHeader({
+    required this.name,
+    required this.email,
+    this.onAvatarTripleTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const CircleAvatar(
-          radius: 50,
-          backgroundColor: AppColors.primaryLight,
-          child: Icon(Icons.person, size: 60, color: AppColors.primary),
+        GestureDetector(
+          onDoubleTap: onAvatarTripleTap,
+          child: const CircleAvatar(
+            radius: 50,
+            backgroundColor: AppColors.primaryLight,
+            child: Icon(Icons.person, size: 60, color: AppColors.primary),
+          ),
         ),
         const SizedBox(height: 16),
         Text(

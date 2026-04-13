@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile_labs/cubits/auth_cubit.dart';
 import 'package:mobile_labs/cubits/auth_state.dart';
+import 'package:mobile_labs/cubits/flashlight_cubit.dart';
 import 'package:mobile_labs/cubits/mqtt_cubit.dart';
 import 'package:mobile_labs/cubits/room_cubit.dart';
 import 'package:mobile_labs/repositories/api_auth_repository.dart';
@@ -45,6 +46,7 @@ void main() async {
           BlocProvider(create: (_) => AuthCubit(authRepository)),
           BlocProvider(create: (_) => RoomCubit(roomRepository, connectivity)),
           BlocProvider(create: (_) => MqttCubit(mqttService)),
+          BlocProvider(create: (_) => FlashlightCubit()),
         ],
         child: const SmartClimateApp(),
       ),

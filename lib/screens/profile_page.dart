@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_labs/cubits/auth_cubit.dart';
 import 'package:mobile_labs/cubits/auth_state.dart';
 import 'package:mobile_labs/utils/profile_dialogs.dart';
+import 'package:mobile_labs/widgets/flashlight_sheet.dart';
 import 'package:mobile_labs/widgets/profile_actions.dart';
 import 'package:mobile_labs/widgets/profile_header.dart';
 import 'package:mobile_labs/widgets/profile_info_section.dart';
@@ -69,6 +70,8 @@ class ProfilePage extends StatelessWidget {
                 ProfileHeader(
                   name: user?.name ?? 'Unknown',
                   email: user?.email ?? '',
+                  onAvatarTripleTap: () =>
+                      FlashlightSheet.show(context),
                 ),
                 const SizedBox(height: 32),
                 ProfileInfoSection(
