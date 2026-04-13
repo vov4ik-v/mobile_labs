@@ -21,11 +21,7 @@ class ModeSelector extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _ModeTab(
-              label: 'Comfort',
-              isActive: true,
-              icon: Icons.weekend,
-            ),
+            _ModeTab(label: 'Comfort', isActive: true, icon: Icons.weekend),
             _ModeTab(label: 'Eco', isActive: false, icon: Icons.eco),
             _ModeTab(
               label: 'Away',

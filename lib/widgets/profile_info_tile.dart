@@ -21,22 +21,14 @@ class ProfileInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 8,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppColors.primaryLight
-              .withValues(alpha: 0.3),
+          color: AppColors.primaryLight.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          color: AppColors.primary,
-          size: 24,
-        ),
+        child: Icon(icon, color: AppColors.primary, size: 24),
       ),
       title: Text(
         title,
@@ -55,7 +47,8 @@ class ProfileInfoTile extends StatelessWidget {
               ),
             )
           : null,
-      trailing: trailing ??
+      trailing:
+          trailing ??
           const Icon(
             Icons.chevron_right,
             color: AppColors.textSecondary,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:mobile_labs/models/user.dart';
 import 'package:mobile_labs/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,4 +101,5 @@ class LocalAuthRepository implements AuthRepository {
   Future<void> logout() async {
     await _prefs.remove(_currentEmailKey);
   }
+
 }

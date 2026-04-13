@@ -18,12 +18,7 @@ class AuthFooterText extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          question,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(question, style: const TextStyle(color: AppColors.textSecondary)),
         TextButton(
           onPressed: onTap,
           child: Text(
