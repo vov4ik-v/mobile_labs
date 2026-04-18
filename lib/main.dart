@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_labs/providers/auth_provider.dart';
-import 'package:mobile_labs/repositories/secure_auth_repository.dart';
+import 'package:mobile_labs/providers/room_provider.dart';
+import 'package:mobile_labs/repositories/firebase_auth_repository.dart';
+import 'package:mobile_labs/repositories/room_repository.dart';
 import 'package:mobile_labs/screens/home_page.dart';
 import 'package:mobile_labs/screens/login_page.dart';
 import 'package:mobile_labs/screens/profile_page.dart';
@@ -13,16 +18,33 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   const secureStorage = FlutterSecureStorage();
-  final authRepository = SecureAuthRepository(secureStorage);
+  final connectivity = ConnectivityService();
+
+  final authRepository = FirebaseAuthRepository(
+    fb.FirebaseAuth.instance,
+    GoogleSignIn(),
+    secureStorage,
+  );
+
+  const roomRepository = HardcodedRoomRepository();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider(authRepository)),
-        Provider(create: (_) => ConnectivityService()),
-        Provider(create: (_) => MqttService(), dispose: (_, mqtt) => mqtt.dispose()),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(authRepository),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RoomProvider(roomRepository),
+        ),
+        Provider(create: (_) => connectivity),
+        Provider(
+          create: (_) => MqttService(),
+          dispose: (_, mqtt) => mqtt.dispose(),
+        ),
       ],
       child: const SmartClimateApp(),
     ),
@@ -39,7 +61,11 @@ class SmartClimateApp extends StatelessWidget {
         if (authProvider.isLoading) {
           return const MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+            home: Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
           );
         }
 
@@ -48,8 +74,11 @@ class SmartClimateApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             brightness: Brightness.light,
-            scaffoldBackgroundColor: AppColors.background,
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+            scaffoldBackgroundColor:
+                AppColors.background,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primary,
+            ),
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.transparent,
               elevation: 0,

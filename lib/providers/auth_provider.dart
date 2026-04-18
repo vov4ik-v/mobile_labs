@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/models/user.dart';
 import 'package:mobile_labs/repositories/auth_repository.dart';
+import 'package:mobile_labs/repositories/firebase_auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
 
   User? _currentUser;
   bool _isLoading = true;
+  String? _error;
 
   AuthProvider(this._authRepository) {
     _init();
@@ -15,19 +17,40 @@ class AuthProvider extends ChangeNotifier {
   User? get currentUser => _currentUser;
   bool get isAuthenticated => _currentUser != null;
   bool get isLoading => _isLoading;
+  String? get error => _error;
+  String? get token => _currentUser?.token;
+
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
 
   Future<void> _init() async {
-    _currentUser = await _authRepository.getCurrentUser();
+    _currentUser =
+        await _authRepository.getCurrentUser();
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(
+    String email,
+    String password,
+  ) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
-      _currentUser = await _authRepository.login(email, password);
+      _currentUser = await _authRepository.login(
+        email,
+        password,
+      );
+      if (_currentUser == null) {
+        _error = 'Invalid email or password';
+      }
+    } on Exception catch (e) {
+      _error = e.toString();
+      _currentUser = null;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -36,17 +59,23 @@ class AuthProvider extends ChangeNotifier {
     return _currentUser != null;
   }
 
-  Future<void> register(User user) async {
+  Future<bool> register(User user) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
       await _authRepository.register(user);
       _currentUser = user;
+    } on Exception catch (e) {
+      _error = e.toString();
+      _currentUser = null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+
+    return _currentUser != null;
   }
 
   Future<void> updateProfile(User user) async {
@@ -65,5 +94,28 @@ class AuthProvider extends ChangeNotifier {
     await _authRepository.logout();
     _currentUser = null;
     notifyListeners();
+  }
+
+  Future<bool> signInWithGoogle() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final repo =
+          _authRepository as FirebaseAuthRepository;
+      _currentUser = await repo.signInWithGoogle();
+      if (_currentUser == null) {
+        _error = 'Google sign-in cancelled';
+      }
+    } on Exception catch (e) {
+      _error = e.toString();
+      _currentUser = null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+
+    return _currentUser != null;
   }
 }

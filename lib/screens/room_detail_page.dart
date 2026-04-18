@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_labs/services/mqtt_service.dart';
 import 'package:mobile_labs/theme.dart';
 import 'package:mobile_labs/widgets/climate_info_card.dart';
+import 'package:mobile_labs/widgets/connection_indicator.dart';
+import 'package:mobile_labs/widgets/heating_toggle.dart';
 import 'package:mobile_labs/widgets/mode_selector.dart';
 import 'package:mobile_labs/widgets/temperature_control_circle.dart';
 import 'package:provider/provider.dart';
@@ -24,12 +25,14 @@ class RoomDetailPage extends StatefulWidget {
   });
 
   @override
-  State<RoomDetailPage> createState() => _RoomDetailPageState();
+  State<RoomDetailPage> createState() =>
+      _RoomDetailPageState();
 }
 
-class _RoomDetailPageState extends State<RoomDetailPage> {
+class _RoomDetailPageState
+    extends State<RoomDetailPage> {
   int _currentTemp = 0;
-  StreamSubscription<String>? _tempSubscription;
+  StreamSubscription<String>? _tempSub;
   bool _isConnecting = true;
   bool _isConnected = false;
 
@@ -37,35 +40,32 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
   void initState() {
     super.initState();
     _currentTemp = widget.temperature;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initMqtt();
-    });
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _initMqtt());
   }
 
   Future<void> _initMqtt() async {
-    final mqtt = Provider.of<MqttService>(context, listen: false);
-    final connected = await mqtt.connectAndListen();
-
+    final mqtt = Provider.of<MqttService>(
+      context,
+      listen: false,
+    );
+    final ok = await mqtt.connectAndListen();
     if (!mounted) return;
-
     setState(() {
       _isConnecting = false;
-      _isConnected = connected;
+      _isConnected = ok;
     });
-
-    _tempSubscription = mqtt.temperatureStream.listen((tempString) {
-      final doubleTemp = double.tryParse(tempString);
-      if (doubleTemp != null && mounted) {
-        setState(() {
-          _currentTemp = doubleTemp.round();
-        });
+    _tempSub = mqtt.temperatureStream.listen((s) {
+      final v = double.tryParse(s);
+      if (v != null && mounted) {
+        setState(() => _currentTemp = v.round());
       }
     });
   }
 
   @override
   void dispose() {
-    _tempSubscription?.cancel();
+    _tempSub?.cancel();
     super.dispose();
   }
 
@@ -83,24 +83,10 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          if (_isConnecting)
-            const Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Icon(
-                _isConnected ? Icons.wifi : Icons.wifi_off,
-                color: _isConnected ? Colors.green : Colors.red,
-                size: 24,
-              ),
-            ),
+          ConnectionIndicator(
+            isConnecting: _isConnecting,
+            isConnected: _isConnected,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -114,7 +100,8 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
               ),
               const SizedBox(height: 32),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
                 children: [
                   ClimateInfoCard(
                     icon: Icons.water_drop_outlined,
@@ -122,13 +109,17 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                     value: '${widget.humidity}%',
                   ),
                   ClimateInfoCard(
-                    icon: Icons.local_fire_department_outlined,
+                    icon: Icons
+                        .local_fire_department_outlined,
                     label: 'Heating',
-                    value: widget.isHeatingOn ? 'On' : 'Off',
+                    value: widget.isHeatingOn
+                        ? 'On'
+                        : 'Off',
                     isHighlight: widget.isHeatingOn,
                   ),
                   const ClimateInfoCard(
-                    icon: Icons.thermostat_auto_outlined,
+                    icon: Icons
+                        .thermostat_auto_outlined,
                     label: 'Mode',
                     value: 'Comfort',
                   ),
@@ -137,46 +128,8 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
               const SizedBox(height: 40),
               const ModeSelector(),
               const SizedBox(height: 40),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: AppShadows.card,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Heating System',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.isHeatingOn
-                              ? 'Currently active'
-                              : 'Currently inactive',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    CupertinoSwitch(
-                      value: widget.isHeatingOn,
-                      activeTrackColor: AppColors.primary,
-                      onChanged: (val) {},
-                    ),
-                  ],
-                ),
+              HeatingToggle(
+                isHeatingOn: widget.isHeatingOn,
               ),
             ],
           ),
