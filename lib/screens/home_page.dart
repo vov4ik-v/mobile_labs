@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_labs/cubits/auth_cubit.dart';
 import 'package:mobile_labs/cubits/mqtt_cubit.dart';
 import 'package:mobile_labs/cubits/mqtt_state.dart';
 import 'package:mobile_labs/cubits/room_cubit.dart';
@@ -21,7 +20,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _ensureLoaded(context);
-    final name = context.watch<AuthCubit>().currentUser?.name ?? 'User';
     final roomState = context.watch<RoomCubit>().state;
 
     return Scaffold(
@@ -36,20 +34,27 @@ class HomePage extends StatelessWidget {
                     _ => '22.5',
                   };
                   return HomeHeader(
-                    displayName: name,
+                    displayName: 'User',
                     avgTemperature: temp,
                     onProfileTap: () =>
                         Navigator.pushNamed(context, '/profile'),
-                    onResetLongPress: () => _resetTemperature(context),
+                    onResetLongPress: () =>
+                        _resetTemperature(context),
                   );
                 },
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverToBoxAdapter(child: RoomGrid(state: roomState)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: RoomGrid(state: roomState),
+              ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 24),
+            ),
           ],
         ),
       ),
@@ -59,9 +64,7 @@ class HomePage extends StatelessWidget {
   void _ensureLoaded(BuildContext context) {
     final roomCubit = context.read<RoomCubit>();
     if (roomCubit.state is RoomInitial) {
-      final token = context.read<AuthCubit>().token ?? '';
-      roomCubit.loadRooms(token);
-      roomCubit.watchConnectivity();
+      roomCubit.loadRooms();
     }
     final mqttCubit = context.read<MqttCubit>();
     if (mqttCubit.state is MqttDisconnected) {

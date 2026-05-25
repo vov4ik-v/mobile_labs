@@ -15,7 +15,7 @@ class FlashlightSheet extends StatelessWidget {
         builder: (_) => AlertDialog(
           title: const Text('Not Supported'),
           content: const Text(
-            'Flashlight is only supported on Android devices.',
+            'Flashlight is only supported on Android.',
           ),
           actions: [
             TextButton(
@@ -27,6 +27,7 @@ class FlashlightSheet extends StatelessWidget {
       );
     }
 
+    cubit.loadBattery();
     return showModalBottomSheet<void>(
       context: context,
       builder: (_) => BlocProvider.value(
@@ -41,6 +42,8 @@ class FlashlightSheet extends StatelessWidget {
     return BlocBuilder<FlashlightCubit, FlashlightState>(
       builder: (context, state) {
         final isOn = state is FlashlightOn;
+        final battery = state.batteryLevel;
+
         return Padding(
           padding: const EdgeInsets.all(32),
           child: Column(
@@ -74,12 +77,18 @@ class FlashlightSheet extends StatelessWidget {
                   color: isOn ? Colors.amber : Colors.grey,
                 ),
               ),
+              if (battery >= 0) ...[
+                const SizedBox(height: 16),
+                _BatteryIndicator(level: battery),
+              ],
               if (state is FlashlightError)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: Text(
                     state.message,
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(
+                      color: Colors.red,
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),
@@ -87,6 +96,43 @@ class FlashlightSheet extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _BatteryIndicator extends StatelessWidget {
+  final int level;
+  const _BatteryIndicator({required this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = level > 50
+        ? Colors.green
+        : level > 20
+            ? Colors.orange
+            : Colors.red;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          level > 50
+              ? Icons.battery_full
+              : level > 20
+                  ? Icons.battery_3_bar
+                  : Icons.battery_1_bar,
+          color: color,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          'Battery: $level%',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }

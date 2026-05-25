@@ -142,7 +142,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "76998b77a88f93c2e03c6b366de91f72764711d1"
+      resolved-ref: b5d039c568f379aca66d93a534e3471d5333d25d
       url: "https://github.com/vov4ik-v/flashlight_plugin.git"
     source: git
     version: "0.0.1"
